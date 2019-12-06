@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="eu.siacs.conversations">
 
-    <application tools:ignore="GoogleAppIndexingWarning">
+    <application tools:ignore="GoogleAppIndexingWarning"
+        android:theme="@style/Theme.AppCompat">
         <activity
             android:name=".ui.ManageAccountActivity"
             android:label="@string/title_activity_manage_accounts"

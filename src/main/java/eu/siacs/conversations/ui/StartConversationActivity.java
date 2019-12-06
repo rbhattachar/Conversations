@@ -79,8 +79,9 @@ import eu.siacs.conversations.utils.XmppUri;
 import eu.siacs.conversations.xmpp.OnUpdateBlocklist;
 import eu.siacs.conversations.xmpp.XmppConnection;
 import rocks.xmpp.addr.Jid;
+import eu.siacs.conversations.R;
 
-public class StartConversationActivity extends XmppActivity implements XmppConnectionService.OnConversationUpdate, OnRosterUpdate, OnUpdateBlocklist, CreatePrivateGroupChatDialog.CreateConferenceDialogListener, JoinConferenceDialog.JoinConferenceDialogListener, SwipeRefreshLayout.OnRefreshListener, CreatePublicChannelDialog.CreatePublicChannelDialogListener {
+public abstract class StartConversationActivity extends XmppActivity implements XmppConnectionService.OnConversationUpdate, OnRosterUpdate, OnUpdateBlocklist, CreatePrivateGroupChatDialog.CreateConferenceDialogListener, JoinConferenceDialog.JoinConferenceDialogListener, SwipeRefreshLayout.OnRefreshListener, CreatePublicChannelDialog.CreatePublicChannelDialogListener {
 
 	public static final String EXTRA_INVITE_URI = "eu.siacs.conversations.invite_uri";
 
@@ -999,7 +1000,8 @@ public class StartConversationActivity extends XmppActivity implements XmppConne
 		startActivityForResult(intent, REQUEST_CREATE_CONFERENCE);
 	}
 
-	@Override
+
+
 	public void onJoinDialogPositiveClick(Dialog dialog, Spinner spinner, AutoCompleteTextView jid, boolean isBookmarkChecked) {
 		if (!xmppConnectionServiceBound) {
 			return;
