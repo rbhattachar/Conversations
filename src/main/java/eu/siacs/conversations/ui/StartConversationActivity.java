@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -79,9 +80,8 @@ import eu.siacs.conversations.utils.XmppUri;
 import eu.siacs.conversations.xmpp.OnUpdateBlocklist;
 import eu.siacs.conversations.xmpp.XmppConnection;
 import rocks.xmpp.addr.Jid;
-import eu.siacs.conversations.R;
 
-public abstract class StartConversationActivity extends XmppActivity implements XmppConnectionService.OnConversationUpdate, OnRosterUpdate, OnUpdateBlocklist, CreatePrivateGroupChatDialog.CreateConferenceDialogListener, JoinConferenceDialog.JoinConferenceDialogListener, SwipeRefreshLayout.OnRefreshListener, CreatePublicChannelDialog.CreatePublicChannelDialogListener {
+public class StartConversationActivity extends XmppActivity implements XmppConnectionService.OnConversationUpdate, OnRosterUpdate, OnUpdateBlocklist, CreatePrivateGroupChatDialog.CreateConferenceDialogListener, JoinConferenceDialog.JoinConferenceDialogListener, SwipeRefreshLayout.OnRefreshListener, CreatePublicChannelDialog.CreatePublicChannelDialogListener {
 
 	public static final String EXTRA_INVITE_URI = "eu.siacs.conversations.invite_uri";
 
@@ -104,6 +104,8 @@ public abstract class StartConversationActivity extends XmppActivity implements 
 	private boolean mHideOfflineContacts = false;
 	private boolean createdByViewIntent = false;
 	private MenuItem.OnActionExpandListener mOnActionExpandListener = new MenuItem.OnActionExpandListener() {
+
+
 
 		@Override
 		public boolean onMenuItemActionExpand(MenuItem item) {
@@ -1001,6 +1003,56 @@ public abstract class StartConversationActivity extends XmppActivity implements 
 	}
 
 
+	@Override
+	public void onJoinDialogPositiveClick(Dialog dialog, Spinner spinner, TextInputLayout layout, AutoCompleteTextView jid, boolean isBookmarkChecked) {
+		if (!xmppConnectionServiceBound) {
+			return;
+		}
+		final Account account = getSelectedAccount(this, spinner);
+		if (account == null) {
+			return;
+		}
+		final String input = jid.getText().toString();
+		Jid conferenceJid;
+		try {
+			conferenceJid = Jid.of(input);
+		} catch (final IllegalArgumentException e) {
+			final XmppUri xmppUri = new XmppUri(input);
+			if (xmppUri.isJidValid() && xmppUri.isAction(XmppUri.ACTION_JOIN)) {
+				final Editable editable = jid.getEditableText();
+				editable.clear();
+				editable.append(xmppUri.getJid().toEscapedString());
+				conferenceJid = xmppUri.getJid();
+			} else {
+				layout.setError(getString(R.string.invalid_jid));
+				return;
+			}
+		}
+
+		if (isBookmarkChecked) {
+			if (account.hasBookmarkFor(conferenceJid)) {
+				layout.setError(getString(R.string.bookmark_already_exists));
+			} else {
+				final Bookmark bookmark = new Bookmark(account, conferenceJid.asBareJid());
+				bookmark.setAutojoin(getBooleanPreference("autojoin", R.bool.autojoin));
+				final String nick = conferenceJid.getResource();
+				if (nick != null && !nick.isEmpty() && !nick.equals(MucOptions.defaultNick(account))) {
+					bookmark.setNick(nick);
+				}
+				//xmppConnectionService.createBookmark(account, bookmark);
+				final Conversation conversation = xmppConnectionService
+						.findOrCreateConversation(account, conferenceJid, true, true, true);
+				bookmark.setConversation(conversation);
+				dialog.dismiss();
+				switchToConversation(conversation);
+			}
+		} else {
+			final Conversation conversation = xmppConnectionService
+					.findOrCreateConversation(account, conferenceJid, true, true, true);
+			dialog.dismiss();
+			switchToConversation(conversation);
+		}
+	}
 
 	public void onJoinDialogPositiveClick(Dialog dialog, Spinner spinner, AutoCompleteTextView jid, boolean isBookmarkChecked) {
 		if (!xmppConnectionServiceBound) {
