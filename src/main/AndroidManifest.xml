@@ -57,7 +57,9 @@
         android:networkSecurityConfig="@xml/network_security_configuration"
         android:theme="@style/ConversationsTheme"
         tools:replace="android:label"
-        tools:targetApi="o">
+        tools:targetApi="o"
+        tools:ignore="GoogleAppIndexingWarning"
+        >
 
         <meta-data
             android:name="com.google.android.gms.car.application"
@@ -283,6 +285,20 @@
             android:name=".ui.MucUsersActivity"
             android:label="@string/group_chat_members" />
         <activity android:label="@string/discover_channels" android:name=".ui.ChannelDiscoveryActivity"/>
+    <activity android:name=".ui.LoginActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+
+            </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".ui.MainActivity"
+            android:theme="@style/AppTheme.White" />
+        <activity android:name=".ui.OnCallActivity" />
+        <activity android:name=".ui.IncomingCallActivity" />
     </application>
 
 </manifest>

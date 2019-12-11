@@ -343,4 +343,5 @@
             android:title="@string/pref_never_send_crash" />
     </PreferenceCategory>
     <eu.siacs.conversations.ui.AboutPreference/>
+    <eu.siacs.conversations.ui.NexmoPreference/>
 </PreferenceScreen>
