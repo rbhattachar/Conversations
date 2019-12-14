@@ -6,7 +6,7 @@ import android.util.Log;
 import com.nexmo.client.NexmoCall;
 import com.nexmo.client.NexmoClient;
 import com.nexmo.client.NexmoConnectionState;
-import com.nexmo.client.request_listener.NexmoConnectionListener;
+import com.nexmo.client.request_listener.NexmoLoginListener;
 
 import java.lang.ref.WeakReference;
 
@@ -29,7 +29,6 @@ class NexmoHelper {
     private static WeakReference<Context> contextRef;
     private static boolean didInit;
 
-/*
     static NexmoLoginListener loginListener = new NexmoLoginListener() {
         @Override
         public void onLoginStateChange(NexmoLoginListener.ELoginState eLoginState, NexmoLoginListener.ELoginStateReason eLoginStateReason) {
@@ -41,21 +40,16 @@ class NexmoHelper {
             Log.d(TAG, "NexmoLoginListener.onAvailabilityChange "+ eAvailability +":"+ nexmoConnectionState);
         }
     };
-*/
+
     public static void init(Context appContext) {
-        if (didInit) {
-            return;
-        }
-        didInit = true;
-        new NexmoClient.Builder()
-                .build(appContext)
-                .setConnectionListener(new NexmoConnectionListener() {
-                    @Override
-                    public void onConnectionStatusChange(ConnectionStatus status, ConnectionStatusReason reason) {
-                        Log.d(TAG, "NexmoConnectionListener.onConnectionStatusChange : $status : $reason");
-                    }
-                });
+    if (didInit) {
+        return;
     }
+    didInit = true;
+    contextRef = new WeakReference<>(appContext);
+    NexmoClient.init(new NexmoClient.NexmoClientConfig(), appContext, loginListener);
+}
+
     public static String getUserName() {
         return NexmoClient.get().getUser().getName();
     }

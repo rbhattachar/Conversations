@@ -53,3 +53,4 @@
 -keep,allowobfuscation interface <1>
 
 -keep class org.webrtc.** { *; }
+-keep class com.nexmo.** { *; }
